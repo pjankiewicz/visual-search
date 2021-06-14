@@ -1,4 +1,3 @@
-mod api;
 mod image_transform;
 mod index;
 mod state;
@@ -18,20 +17,26 @@ use tract_onnx::prelude::*;
 
 use crate::index::events::{AddImage, RemoveImage, SearchImage};
 use crate::state::app::EmbeddingApp;
+use actix_web::dev::ServiceRequest;
 use actix_web::web::Data;
-use actix_web::{get, post, web, App, HttpRequest, HttpServer, Responder};
+use actix_web::{get, post, web, App, Error, HttpRequest, HttpServer, Responder};
 use std::fs::read_to_string;
 
-#[derive(Serialize, Deserialize)]
+use actix_web_httpauth::extractors::bearer::{BearerAuth, Config};
+use actix_web_httpauth::extractors::AuthenticationError;
+use actix_web_httpauth::middleware::HttpAuthentication;
+
+#[derive(Clone, Serialize, Deserialize)]
 pub struct ServerConfig {
     pub ip: String,
     pub port: u16,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct AppConfig {
     pub n_workers: usize,
     pub server_config: ServerConfig,
+    pub token: String,
 }
 
 #[post("/add_image")]
@@ -76,6 +81,24 @@ async fn remove_collection(
     "ok".into()
 }
 
+async fn validator(req: ServiceRequest, credentials: BearerAuth) -> Result<ServiceRequest, Error> {
+    let config = req
+        .app_data::<Config>()
+        .map(|data| data.clone())
+        .unwrap_or_else(Default::default);
+
+    let app_config = req
+        .app_data::<AppConfig>()
+        .map(|data| data.clone())
+        .unwrap();
+
+    if credentials.token() == app_config.token {
+        Ok(req)
+    } else {
+        Err(AuthenticationError::from(config).into())
+    }
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let matches = ClapApp::new("Visual Search ")
@@ -109,7 +132,10 @@ async fn main() -> std::io::Result<()> {
     println!("Visual Search listening on {:}", full_address);
     let embedding_app = Data::new(EmbeddingApp::new(app_config.n_workers));
     HttpServer::new(move || {
+        let auth = HttpAuthentication::bearer(validator);
         App::new()
+            .wrap(auth)
+            .data(app_config.clone())
             .app_data(embedding_app.clone())
             .service(add_image)
     })

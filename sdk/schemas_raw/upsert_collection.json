@@ -1,0 +1,328 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UpsertCollection",
+  "type": "object",
+  "required": [
+    "config",
+    "name"
+  ],
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "config": {
+      "$ref": "#/definitions/GenericModelConfig"
+    }
+  },
+  "definitions": {
+    "GenericModelConfig": {
+      "anyOf": [
+        {
+          "type": "object",
+          "required": [
+            "ModelConfig"
+          ],
+          "properties": {
+            "ModelConfig": {
+              "$ref": "#/definitions/ModelConfig"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "ModelArchitecture"
+          ],
+          "properties": {
+            "ModelArchitecture": {
+              "$ref": "#/definitions/ModelArchitecture"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ModelConfig": {
+      "type": "object",
+      "required": [
+        "channels",
+        "image_size",
+        "image_transformation",
+        "model_name",
+        "model_url"
+      ],
+      "properties": {
+        "model_name": {
+          "type": "string"
+        },
+        "model_url": {
+          "type": "string"
+        },
+        "image_transformation": {
+          "$ref": "#/definitions/TransformationPipeline"
+        },
+        "image_size": {
+          "$ref": "#/definitions/ImageSize"
+        },
+        "layer_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "channels": {
+          "$ref": "#/definitions/Channels"
+        }
+      }
+    },
+    "TransformationPipeline": {
+      "type": "object",
+      "required": [
+        "steps"
+      ],
+      "properties": {
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ImageTransform"
+          }
+        }
+      }
+    },
+    "ImageTransform": {
+      "anyOf": [
+        {
+          "type": "object",
+          "required": [
+            "ResizeRGBImage"
+          ],
+          "properties": {
+            "ResizeRGBImage": {
+              "$ref": "#/definitions/ResizeRGBImage"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "ResizeRGBImageAspectRatio"
+          ],
+          "properties": {
+            "ResizeRGBImageAspectRatio": {
+              "$ref": "#/definitions/ResizeRGBImageAspectRatio"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "CenterCrop"
+          ],
+          "properties": {
+            "CenterCrop": {
+              "$ref": "#/definitions/CenterCrop"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "Normalization"
+          ],
+          "properties": {
+            "Normalization": {
+              "$ref": "#/definitions/Normalization"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "Transpose"
+          ],
+          "properties": {
+            "Transpose": {
+              "$ref": "#/definitions/Transpose"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "ToArray"
+          ],
+          "properties": {
+            "ToArray": {
+              "$ref": "#/definitions/ToArray"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "ToTensor"
+          ],
+          "properties": {
+            "ToTensor": {
+              "$ref": "#/definitions/ToTensor"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ResizeRGBImage": {
+      "type": "object",
+      "required": [
+        "filter",
+        "image_size"
+      ],
+      "properties": {
+        "image_size": {
+          "$ref": "#/definitions/ImageSize"
+        },
+        "filter": {
+          "$ref": "#/definitions/FilterType"
+        }
+      }
+    },
+    "ImageSize": {
+      "type": "object",
+      "required": [
+        "height",
+        "width"
+      ],
+      "properties": {
+        "width": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "height": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        }
+      }
+    },
+    "FilterType": {
+      "type": "string",
+      "enum": [
+        "Nearest",
+        "Triangle",
+        "CatmullRom",
+        "Gaussian",
+        "Lanczos3"
+      ]
+    },
+    "ResizeRGBImageAspectRatio": {
+      "type": "object",
+      "required": [
+        "filter",
+        "image_size",
+        "scale"
+      ],
+      "properties": {
+        "image_size": {
+          "$ref": "#/definitions/ImageSize"
+        },
+        "scale": {
+          "type": "number",
+          "format": "float"
+        },
+        "filter": {
+          "$ref": "#/definitions/FilterType"
+        }
+      }
+    },
+    "CenterCrop": {
+      "type": "object",
+      "required": [
+        "crop_size"
+      ],
+      "properties": {
+        "crop_size": {
+          "$ref": "#/definitions/ImageSize"
+        }
+      }
+    },
+    "Normalization": {
+      "type": "object",
+      "required": [
+        "div",
+        "sub",
+        "zeroone"
+      ],
+      "properties": {
+        "sub": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        },
+        "div": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        },
+        "zeroone": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Transpose": {
+      "type": "object",
+      "required": [
+        "axes"
+      ],
+      "properties": {
+        "axes": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint",
+            "minimum": 0.0
+          },
+          "maxItems": 4,
+          "minItems": 4
+        }
+      }
+    },
+    "ToArray": {
+      "type": "object"
+    },
+    "ToTensor": {
+      "type": "object"
+    },
+    "Channels": {
+      "type": "string",
+      "enum": [
+        "CWH",
+        "WHC"
+      ]
+    },
+    "ModelArchitecture": {
+      "type": "string",
+      "enum": [
+        "SqueezeNet",
+        "MobileNetV2",
+        "ResNet152",
+        "EfficientNetLite4"
+      ]
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "SearchImage",
+    "type": "object",
+    "required": [
+        "collection_name",
+        "n_results",
+        "source"
+    ],
+    "properties": {
+        "source": {
+            "$ref": "common.json#/definitions/ImageSource"
+        },
+        "collection_name": {
+            "type": "string"
+        },
+        "n_results": {
+            "type": "integer",
+            "format": "uint",
+            "minimum": 0.0
+        }
+    }
+}

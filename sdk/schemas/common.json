@@ -1,0 +1,358 @@
+{
+    "definitions": {
+        "ImageSource": {
+            "anyOf": [
+                {
+                    "type": "object",
+                    "required": [
+                        "ImageBytes"
+                    ],
+                    "properties": {
+                        "ImageBytes": {
+                            "$ref": "common.json#/definitions/ImageBytes"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "Url"
+                    ],
+                    "properties": {
+                        "Url": {
+                            "type": "string",
+                            "format": "uri"
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            ]
+        },
+        "ImageBytes": {
+            "type": "object",
+            "required": [
+                "bytes"
+            ],
+            "properties": {
+                "bytes": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer",
+                        "format": "uint8",
+                        "minimum": 0.0
+                    }
+                }
+            }
+        },
+        "GenericModelConfig": {
+            "anyOf": [
+                {
+                    "type": "object",
+                    "required": [
+                        "ModelConfig"
+                    ],
+                    "properties": {
+                        "ModelConfig": {
+                            "$ref": "common.json#/definitions/ModelConfig"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "ModelArchitecture"
+                    ],
+                    "properties": {
+                        "ModelArchitecture": {
+                            "$ref": "common.json#/definitions/ModelArchitecture"
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            ]
+        },
+        "ModelConfig": {
+            "type": "object",
+            "required": [
+                "channels",
+                "image_size",
+                "image_transformation",
+                "model_name",
+                "model_url"
+            ],
+            "properties": {
+                "model_name": {
+                    "type": "string"
+                },
+                "model_url": {
+                    "type": "string"
+                },
+                "image_transformation": {
+                    "$ref": "common.json#/definitions/TransformationPipeline"
+                },
+                "image_size": {
+                    "$ref": "common.json#/definitions/ImageSize"
+                },
+                "layer_name": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "channels": {
+                    "$ref": "common.json#/definitions/Channels"
+                }
+            }
+        },
+        "TransformationPipeline": {
+            "type": "object",
+            "required": [
+                "steps"
+            ],
+            "properties": {
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "common.json#/definitions/ImageTransform"
+                    }
+                }
+            }
+        },
+        "ImageTransform": {
+            "anyOf": [
+                {
+                    "type": "object",
+                    "required": [
+                        "ResizeRGBImage"
+                    ],
+                    "properties": {
+                        "ResizeRGBImage": {
+                            "$ref": "common.json#/definitions/ResizeRGBImage"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "ResizeRGBImageAspectRatio"
+                    ],
+                    "properties": {
+                        "ResizeRGBImageAspectRatio": {
+                            "$ref": "common.json#/definitions/ResizeRGBImageAspectRatio"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "CenterCrop"
+                    ],
+                    "properties": {
+                        "CenterCrop": {
+                            "$ref": "common.json#/definitions/CenterCrop"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "Normalization"
+                    ],
+                    "properties": {
+                        "Normalization": {
+                            "$ref": "common.json#/definitions/Normalization"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "Transpose"
+                    ],
+                    "properties": {
+                        "Transpose": {
+                            "$ref": "common.json#/definitions/Transpose"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "ToArray"
+                    ],
+                    "properties": {
+                        "ToArray": {
+                            "$ref": "common.json#/definitions/ToArray"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "ToTensor"
+                    ],
+                    "properties": {
+                        "ToTensor": {
+                            "$ref": "common.json#/definitions/ToTensor"
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            ]
+        },
+        "ResizeRGBImage": {
+            "type": "object",
+            "required": [
+                "filter",
+                "image_size"
+            ],
+            "properties": {
+                "image_size": {
+                    "$ref": "common.json#/definitions/ImageSize"
+                },
+                "filter": {
+                    "$ref": "common.json#/definitions/FilterType"
+                }
+            }
+        },
+        "ImageSize": {
+            "type": "object",
+            "required": [
+                "height",
+                "width"
+            ],
+            "properties": {
+                "width": {
+                    "type": "integer",
+                    "format": "uint",
+                    "minimum": 0.0
+                },
+                "height": {
+                    "type": "integer",
+                    "format": "uint",
+                    "minimum": 0.0
+                }
+            }
+        },
+        "FilterType": {
+            "type": "string",
+            "enum": [
+                "Nearest",
+                "Triangle",
+                "CatmullRom",
+                "Gaussian",
+                "Lanczos3"
+            ]
+        },
+        "ResizeRGBImageAspectRatio": {
+            "type": "object",
+            "required": [
+                "filter",
+                "image_size",
+                "scale"
+            ],
+            "properties": {
+                "image_size": {
+                    "$ref": "common.json#/definitions/ImageSize"
+                },
+                "scale": {
+                    "type": "number",
+                    "format": "float"
+                },
+                "filter": {
+                    "$ref": "common.json#/definitions/FilterType"
+                }
+            }
+        },
+        "CenterCrop": {
+            "type": "object",
+            "required": [
+                "crop_size"
+            ],
+            "properties": {
+                "crop_size": {
+                    "$ref": "common.json#/definitions/ImageSize"
+                }
+            }
+        },
+        "Normalization": {
+            "type": "object",
+            "required": [
+                "div",
+                "sub",
+                "zeroone"
+            ],
+            "properties": {
+                "sub": {
+                    "type": "array",
+                    "items": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "maxItems": 3,
+                    "minItems": 3
+                },
+                "div": {
+                    "type": "array",
+                    "items": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "maxItems": 3,
+                    "minItems": 3
+                },
+                "zeroone": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "Transpose": {
+            "type": "object",
+            "required": [
+                "axes"
+            ],
+            "properties": {
+                "axes": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer",
+                        "format": "uint",
+                        "minimum": 0.0
+                    },
+                    "maxItems": 4,
+                    "minItems": 4
+                }
+            }
+        },
+        "ToArray": {
+            "type": "object"
+        },
+        "ToTensor": {
+            "type": "object"
+        },
+        "Channels": {
+            "type": "string",
+            "enum": [
+                "CWH",
+                "WHC"
+            ]
+        },
+        "ModelArchitecture": {
+            "type": "string",
+            "enum": [
+                "SqueezeNet",
+                "MobileNetV2",
+                "ResNet152",
+                "EfficientNetLite4"
+            ]
+        }
+    }
+}

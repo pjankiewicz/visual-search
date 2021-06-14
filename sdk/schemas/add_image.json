@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "AddImage",
+    "type": "object",
+    "required": [
+        "collection_name",
+        "id",
+        "source"
+    ],
+    "properties": {
+        "source": {
+            "$ref": "common.json#/definitions/ImageSource"
+        },
+        "collection_name": {
+            "type": "string"
+        },
+        "id": {
+            "type": "string"
+        }
+    }
+}

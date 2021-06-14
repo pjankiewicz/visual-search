@@ -4,7 +4,7 @@ use image::imageops::{crop, resize, FilterType};
 use image::RgbImage;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, DisplayFromStr};
+use serde_with::serde_as;
 use tract_onnx::prelude::tract_ndarray::Array4;
 use tract_onnx::prelude::{tract_ndarray, Tensor};
 use tract_onnx::tract_core::ndarray::Array;

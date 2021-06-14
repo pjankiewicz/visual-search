@@ -9,7 +9,6 @@ use std::str::FromStr;
 use std::time::Instant;
 use tract_onnx::prelude::*;
 
-mod api;
 mod image_transform;
 mod index;
 mod state;

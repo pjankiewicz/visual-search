@@ -1,9 +1,8 @@
 use bytes::Bytes;
-use image::io::Reader as ImageReader;
 use image::RgbImage;
 use std::error::Error;
 use std::fs;
-use std::io::{Cursor, Write};
+use std::io::Write;
 use std::path::Path;
 
 pub fn remove_non_alphanum(s: &String) -> String {
