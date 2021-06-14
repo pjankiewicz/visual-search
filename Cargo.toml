@@ -1,0 +1,20 @@
+[package]
+authors = ["Paweł Jankiewicz <p.jankiewicz@gmail.com>"]
+edition = "2018"
+name = "image-embedding-rust"
+version = "0.1.0"
+
+[dependencies]
+clap = "3.0.0-beta.2"
+glob = "*"
+image = "*"
+io = "*"
+serde = "*"
+serde_derive = "*"
+serde_json = "*"
+tract = "*"
+tract-onnx = "*"
+
+[dependencies.reqwest]
+features = ["blocking"]
+version = "0.11.3"
