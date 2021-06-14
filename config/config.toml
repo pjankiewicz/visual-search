@@ -1,0 +1,5 @@
+n_workers = 4
+
+[server_config]
+ip = "127.0.0.1"
+port = 8890

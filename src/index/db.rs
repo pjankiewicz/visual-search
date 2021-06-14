@@ -57,13 +57,13 @@ impl VectorIndex {
         hnsw.insert(Euclidean(v), &mut searcher);
     }
 
-    pub fn search(&self, v: Vec<f32>) -> Vec<AnnNeighbor> {
+    pub fn search(&self, v: &Vec<f32>) -> Vec<AnnNeighbor> {
         let mut neighbors = [Neighbor::invalid(); 8];
         let mut searcher = self.searcher.write().unwrap();
         let mut hnsw = self.hnsw.write().unwrap();
         let removed = self.removed.read().unwrap();
         let vectors = self.vectors.read().unwrap();
-        hnsw.nearest(&Euclidean(v), 24, &mut searcher, &mut neighbors);
+        hnsw.nearest(&Euclidean(v.to_vec()), 24, &mut searcher, &mut neighbors);
         neighbors
             .iter()
             .filter(|e| {
