@@ -63,7 +63,8 @@ impl VectorIndex {
         let mut hnsw = self.hnsw.write().unwrap();
         let removed = self.removed.read().unwrap();
         let vectors = self.vectors.read().unwrap();
-        hnsw.nearest(&Euclidean(v.to_vec()), 24, &mut searcher, &mut neighbors);
+        hnsw.nearest(&Euclidean(v.to_vec()), 8, &mut searcher, &mut neighbors);
+        println!("Neighbors {:?}", neighbors);
         neighbors
             .iter()
             .filter(|e| {
@@ -146,15 +147,15 @@ mod tests {
             i += 1;
         }
 
-        let neighbors = index.search(features[0].to_vec().clone());
+        let neighbors = index.search(&features[0].to_vec().clone());
         assert_eq!(neighbors[0].id, "0".to_string());
 
         index.remove("0".to_string());
-        let neighbors = index.search(features[0].to_vec().clone());
+        let neighbors = index.search(&features[0].to_vec().clone());
         assert_eq!(neighbors[0].id, "1".to_string());
 
         index.rebuild();
-        let neighbors = index.search(features[0].to_vec().clone());
+        let neighbors = index.search(&features[0].to_vec().clone());
         assert_eq!(neighbors[0].id, "1".to_string());
     }
 }

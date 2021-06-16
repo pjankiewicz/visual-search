@@ -15,3 +15,5 @@ Cargo.lock
 .idea
 *.onnx
 
+__pycache__
+.ipynb_checkpoints

@@ -112,7 +112,7 @@ impl EmbeddingApp {
     pub fn remove_image(&self, remove_image: RemoveImage) -> Result<(), Box<dyn Error>> {
         let mut collections = self.collections.write().map_err(|_| "RwLock Error")?;
         collections
-            .entry(remove_image.index_name.clone())
+            .entry(remove_image.collection_name.clone())
             .and_modify(|c| c.index.remove(remove_image.id));
         Ok(())
     }
@@ -122,6 +122,7 @@ impl EmbeddingApp {
         if let Some(collection) = collections.get(&search_image.collection_name) {
             let image = EmbeddingApp::image_source_to_rgb_image(&search_image.source)?;
             let features = collection.model.extract_features(image)?;
+            println!("Features len {}", features.len());
             let results: Vec<_> = collection
                 .index
                 .search(&features)
@@ -160,6 +161,7 @@ impl EmbeddingApp {
             let collections = self.collections.clone();
             let handle = thread::spawn(move || loop {
                 if let Some(job) = tq.get_work() {
+                    println!("Queue length {}", tq.inner.lock().unwrap().len());
                     match job {
                         Job::AddImage(add_image) => {
                             EmbeddingApp::add_image_to_collection(collections.clone(), &add_image);
@@ -169,7 +171,7 @@ impl EmbeddingApp {
                     }
                 }
                 std::thread::yield_now();
-                std::thread::sleep(std::time::Duration::from_millis(100));
+                std::thread::sleep(std::time::Duration::from_millis(10));
             });
             handles.push(handle);
         }

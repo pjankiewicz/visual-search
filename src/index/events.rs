@@ -14,34 +14,34 @@ pub enum Event {
     RemoveCollection(RemoveCollection),
 }
 
-#[derive(Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct ImageBytes {
     pub bytes: Vec<u8>,
 }
 
-#[derive(Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub enum ImageSource {
     ImageBytes(ImageBytes),
     Url(Url),
 }
 
-#[derive(Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct AddImage {
     pub source: ImageSource,
     pub collection_name: CollectionName,
     pub id: String,
 }
 
-#[derive(Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct SearchImage {
     pub source: ImageSource,
     pub collection_name: CollectionName,
     pub n_results: usize,
 }
 
-#[derive(Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
 pub struct RemoveImage {
-    pub index_name: String,
+    pub collection_name: String,
     pub id: String,
 }
 

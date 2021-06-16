@@ -19,7 +19,7 @@ use crate::index::events::{AddImage, RemoveImage, SearchImage};
 use crate::state::app::EmbeddingApp;
 use actix_web::dev::ServiceRequest;
 use actix_web::web::Data;
-use actix_web::{get, post, web, App, Error, HttpRequest, HttpServer, Responder};
+use actix_web::{get, post, web, App, Error, HttpRequest, HttpServer, Responder, Result, error, HttpResponse};
 use std::fs::read_to_string;
 
 use actix_web_httpauth::extractors::bearer::{BearerAuth, Config};
@@ -39,8 +39,14 @@ pub struct AppConfig {
     pub token: String,
 }
 
+#[get("/")]
+async fn home(state: web::Data<EmbeddingApp>) -> String {
+    format!("RecoAI Visual Search running with {} workers", state.n_workers).into()
+}
+
 #[post("/add_image")]
 async fn add_image(state: web::Data<EmbeddingApp>, add_image: web::Json<AddImage>) -> String {
+    println!("Add image");
     state.add_image(add_image.into_inner());
     "ok".into()
 }
@@ -59,17 +65,18 @@ async fn search_image(
     state: web::Data<EmbeddingApp>,
     search_image: web::Json<SearchImage>,
 ) -> String {
-    state.search_image(search_image.into_inner());
-    "ok".into()
+    let search_results = state.search_image(search_image.into_inner()).unwrap();
+    let json_results = serde_json::to_string(&search_results).unwrap();
+    json_results.into()
 }
 
 #[post("/upsert_collection")]
 async fn upsert_collection(
     state: web::Data<EmbeddingApp>,
     upsert_collection: web::Json<UpsertCollection>,
-) -> String {
+) -> Result<String> {
     state.upsert_collection(&upsert_collection.into_inner());
-    "ok".into()
+    Ok("ok".into())
 }
 
 #[post("/remove_collection")]
@@ -88,7 +95,7 @@ async fn validator(req: ServiceRequest, credentials: BearerAuth) -> Result<Servi
         .unwrap_or_else(Default::default);
 
     let app_config = req
-        .app_data::<AppConfig>()
+        .app_data::<Data<AppConfig>>()
         .map(|data| data.clone())
         .unwrap();
 
@@ -97,6 +104,16 @@ async fn validator(req: ServiceRequest, credentials: BearerAuth) -> Result<Servi
     } else {
         Err(AuthenticationError::from(config).into())
     }
+}
+
+pub fn json_error_handler(err: error::JsonPayloadError, _: &HttpRequest) -> Error {
+    error::InternalError::from_response(
+        "",
+        HttpResponse::BadRequest()
+            .content_type("application/json")
+            .body(format!(r#"{{"error":"json error: {:?}"}}"#, err)),
+    )
+        .into()
 }
 
 #[actix_web::main]
@@ -120,7 +137,7 @@ async fn main() -> std::io::Result<()> {
             .expect("Argument config not specified")
             .to_string(),
     )
-    .expect("Problems reading the file with configuration");
+        .expect("Problems reading the file with configuration");
 
     let app_config: AppConfig = toml::from_str(&app_config_str)?;
 
@@ -131,15 +148,34 @@ async fn main() -> std::io::Result<()> {
 
     println!("Visual Search listening on {:}", full_address);
     let embedding_app = Data::new(EmbeddingApp::new(app_config.n_workers));
+    embedding_app.start_workers();
+
     HttpServer::new(move || {
         let auth = HttpAuthentication::bearer(validator);
         App::new()
             .wrap(auth)
             .data(app_config.clone())
             .app_data(embedding_app.clone())
+            .app_data(web::JsonConfig::default()
+                // 10 MB limit
+                .limit(1024*1024*10)
+                .error_handler(|err, _req| {
+                    error::InternalError::from_response(
+                    "",
+                    HttpResponse::BadRequest()
+                        .content_type("application/json")
+                        .body(format!(r#"{{"json error":"{:?}"}}"#, err)),
+                    ).into()
+            }))
+            // .app_data(json_error_handler)
+            .service(home)
+            .service(upsert_collection)
+            .service(remove_collection)
             .service(add_image)
+            .service(remove_image)
+            .service(search_image)
     })
-    .bind(full_address)?
-    .run()
-    .await
+        .bind(full_address)?
+        .run()
+        .await
 }

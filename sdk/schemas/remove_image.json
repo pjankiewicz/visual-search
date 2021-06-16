@@ -3,11 +3,11 @@
     "title": "RemoveImage",
     "type": "object",
     "required": [
-        "id",
-        "index_name"
+        "collection_name",
+        "id"
     ],
     "properties": {
-        "index_name": {
+        "collection_name": {
             "type": "string"
         },
         "id": {

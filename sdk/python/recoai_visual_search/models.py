@@ -154,20 +154,20 @@ class RemoveCollection:
 
 @dataclass
 class RemoveImage:
+    collection_name: str
     id: str
-    index_name: str
 
     @staticmethod
     def from_dict(obj: Any) -> 'RemoveImage':
         assert isinstance(obj, dict)
+        collection_name = from_str(obj.get("collection_name"))
         id = from_str(obj.get("id"))
-        index_name = from_str(obj.get("index_name"))
-        return RemoveImage(id, index_name)
+        return RemoveImage(collection_name, id)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        result["collection_name"] = from_str(self.collection_name)
         result["id"] = from_str(self.id)
-        result["index_name"] = from_str(self.index_name)
         return result
 
 
