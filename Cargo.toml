@@ -1,7 +1,7 @@
 [package]
-authors = ["Paweł Jankiewicz <p.jankiewicz@gmail.com>"]
+authors = ["Paweł Jankiewicz <pawel@logicai.io>", "Michal Zagalski <michal@logicai.io>"]
 edition = "2018"
-name = "image-embedding-rust"
+name = "visual-search"
 version = "0.1.0"
 
 [dependencies]
@@ -34,7 +34,7 @@ path = "src/lib.rs"
 
 [[bin]]
 path = "src/webapp.rs"
-name = "image-embedding-rust"
+name = "visual-search"
 
 [[bin]]
 path = "src/imagenet_test.rs"

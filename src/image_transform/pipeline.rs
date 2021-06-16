@@ -1,4 +1,5 @@
 use crate::image_transform::pipeline::tract_ndarray::Ix4;
+use crate::image_transform::models::LoadedModel;
 use enum_dispatch::enum_dispatch;
 use image::imageops::{crop, resize, FilterType};
 use image::RgbImage;
@@ -305,6 +306,8 @@ mod tests {
     use super::*;
     use crate::image_transform::functions::read_rgb_image;
     use tract_onnx::prelude::*;
+    use crate::state::app::EmbeddingApp;
+    use crate::image_transform::models::ModelArchitecture;
 
     #[test]
     fn test_resize() {
@@ -353,45 +356,11 @@ mod tests {
 
     #[test]
     fn test_classification() {
-        let pipeline = TransformationPipeline {
-            steps: vec![
-                ResizeRGBImage {
-                    image_size: ImageSize {
-                        width: 224,
-                        height: 224,
-                    },
-                    filter: FilterType::Nearest,
-                }
-                .into(),
-                ToArray {}.into(),
-                Normalization {
-                    sub: [0.485, 0.456, 0.406],
-                    div: [0.229, 0.224, 0.225],
-                    zeroone: true,
-                }
-                .into(),
-                ToTensor {}.into(),
-            ],
-        };
+        let mut loaded_model = LoadedModel::new_from_architecture(ModelArchitecture::MobileNetV2);
+        loaded_model.config.layer_name = None;
         let image = read_rgb_image("images/cat.jpeg");
-        let image_tensor = pipeline
-            .transform_image(&image)
-            .expect("Cannot transform image");
-
-        let model = tract_onnx::onnx()
-            .model_for_path("models/mobilenetv2-7.onnx".to_string())
-            .expect("Cannot read model")
-            .with_input_fact(
-                0,
-                InferenceFact::dt_shape(f32::datum_type(), tvec!(1, 3, 224, 224)),
-            )
-            .unwrap()
-            .into_optimized()
-            .unwrap()
-            .into_runnable()
-            .unwrap();
-
-        let result = model.run(tvec!(image_tensor)).unwrap();
+        let image_tensor = loaded_model.config.image_transformation.transform_image(&image).unwrap();
+        let result = loaded_model.model.run(tvec!(image_tensor)).unwrap();
 
         // find and display the max value with its index
         let best = result[0]

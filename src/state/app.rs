@@ -265,7 +265,5 @@ mod tests {
             collection_name: "images".into(),
             id: "owl".into()
         });
-
-        handles.into_iter().map(|t| t.join().unwrap()).count();
     }
 }

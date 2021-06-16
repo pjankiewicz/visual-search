@@ -7,6 +7,15 @@ Visual Search in Rust is a single responsibility server/library to perform simil
 extracting features using selected deep learning model. There is an ability to organize the images in collections
 if you need to perform searches within some categories.
 
+Examples
+-----------
+
+Below are examples of search results using a dataset of ecommerce images. Each collection has about 500-600 images.
+
+<img src="images/examples/shoes_1.png"/>
+
+<img src="images/examples/girls_apparel_1.png"/>
+
 Features
 -----------
 
@@ -20,6 +29,17 @@ Features
 
 See example how to use the [SDK](sdk/sdk_example/visual_search_python_sdk_example.ipynb)
 
+Installation
+-----------
+
+From source:
+
+1. Clone this repository
+2. Run `cargo build --release`
+3. Run server `target/release/image-embedding-rust --config config/config.toml`
+
+For production remember to change the bearer token in config.toml
+
 Benchmark
 -----------
 
@@ -30,3 +50,4 @@ Searching for a single image takes 150 milliseconds.
 To do:
 - [ ] persistance (right now the server is fully in-memory)
 - [ ] logging
+- [ ] clean all warnings
