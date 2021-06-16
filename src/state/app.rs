@@ -121,6 +121,7 @@ impl EmbeddingApp {
         let mut collections = self.collections.write().map_err(|_| "RwLock Error")?;
         if let Some(collection) = collections.get(&search_image.collection_name) {
             let image = EmbeddingApp::image_source_to_rgb_image(&search_image.source)?;
+            println!("Extracting features");
             let features = collection.model.extract_features(image)?;
             println!("Features len {}", features.len());
             let results: Vec<_> = collection
@@ -220,6 +221,7 @@ impl EmbeddingApp {
         println!("Converting bytes to RgbImage");
         let bytes = bytes::Bytes::from(image_bytes);
         let image = image_from_bytes(&bytes)?;
+        println!("Converted");
         Ok(image)
     }
 }

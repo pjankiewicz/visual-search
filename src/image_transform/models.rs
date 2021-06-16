@@ -76,11 +76,13 @@ impl LoadedModel {
     }
 
     pub fn extract_features(&self, image: RgbImage) -> Result<Vec<f32>, String> {
+        println!("Transforming the image");
         let image_tensor = self
             .config
             .image_transformation
             .transform_image(&image)
             .expect("Cannot transform image");
+        println!("Running the model");
         let result = self
             .model
             .run(tvec!(image_tensor))

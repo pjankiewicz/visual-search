@@ -24,7 +24,7 @@ from tqdm import tqdm
 
 # Creating a collection to keep the images 
 # -------------
-# In this case we are using MOBILE_NET_V2 as the feature extractor
+# In this case we are using MOBILE_NET_V2 as the feature extractor. 
 
 api = RecoAIVisualSearch(bearer_token="secrettoken", address="http://localhost:8890")
 upsert_collection = UpsertCollection(
@@ -35,8 +35,10 @@ upsert_collection = UpsertCollection(
 )
 response = api.upsert_collection(upsert_collection)
 
-# Indexing images
+# Indexing local images
 # -----------
+#
+# It is possible to index local images using `ImageBytes` or `ImageSource(url="link_to_image")`
 
 for img_path in tqdm(sorted(glob("../../images/imagenet-sample-images/*.JPEG"))):
     image_id = img_path.split("/")[-1].split(".")[0]
@@ -49,11 +51,14 @@ for img_path in tqdm(sorted(glob("../../images/imagenet-sample-images/*.JPEG")))
 # Searching for a cat 
 # -----------
 
+img = plt.imread("../../images/cat.jpeg")
+ipyplot.plot_images([img])
+
 with open("../../images/cat.jpeg", "rb") as inp:
     image_bytes = list(inp.read())
 image_source = ImageSource(image_bytes=ImageBytes(image_bytes))
 search_image = SearchImage(collection_name="images", n_results=8, source=image_source)
-search_results = json.loads(api.search_image(search_image).content)
+# %time search_results = json.loads(api.search_image(search_image).content)
 search_results
 
 images_paths = []
@@ -62,5 +67,3 @@ for result in search_results["results"]:
     img = plt.imread(fn)
     images_paths.append(img)    
 ipyplot.plot_images(images_paths)
-
-

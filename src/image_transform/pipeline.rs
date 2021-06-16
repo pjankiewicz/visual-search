@@ -117,7 +117,7 @@ impl GenericTransform for ResizeRGBImage {
             ImageTransformResult::RgbImage(image) => Ok(resize(
                 &image,
                 self.image_size.width as u32,
-                self.image_size.width as u32,
+                self.image_size.height as u32,
                 FilterType::Triangle,
             )
             .into()),

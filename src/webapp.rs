@@ -19,7 +19,9 @@ use crate::index::events::{AddImage, RemoveImage, SearchImage};
 use crate::state::app::EmbeddingApp;
 use actix_web::dev::ServiceRequest;
 use actix_web::web::Data;
-use actix_web::{get, post, web, App, Error, HttpRequest, HttpServer, Responder, Result, error, HttpResponse};
+use actix_web::{
+    error, get, post, web, App, Error, HttpRequest, HttpResponse, HttpServer, Responder, Result,
+};
 use std::fs::read_to_string;
 
 use actix_web_httpauth::extractors::bearer::{BearerAuth, Config};
@@ -41,7 +43,11 @@ pub struct AppConfig {
 
 #[get("/")]
 async fn home(state: web::Data<EmbeddingApp>) -> String {
-    format!("RecoAI Visual Search running with {} workers", state.n_workers).into()
+    format!(
+        "RecoAI Visual Search running with {} workers",
+        state.n_workers
+    )
+    .into()
 }
 
 #[post("/add_image")]
@@ -113,7 +119,7 @@ pub fn json_error_handler(err: error::JsonPayloadError, _: &HttpRequest) -> Erro
             .content_type("application/json")
             .body(format!(r#"{{"error":"json error: {:?}"}}"#, err)),
     )
-        .into()
+    .into()
 }
 
 #[actix_web::main]
@@ -137,7 +143,7 @@ async fn main() -> std::io::Result<()> {
             .expect("Argument config not specified")
             .to_string(),
     )
-        .expect("Problems reading the file with configuration");
+    .expect("Problems reading the file with configuration");
 
     let app_config: AppConfig = toml::from_str(&app_config_str)?;
 
@@ -156,17 +162,20 @@ async fn main() -> std::io::Result<()> {
             .wrap(auth)
             .data(app_config.clone())
             .app_data(embedding_app.clone())
-            .app_data(web::JsonConfig::default()
-                // 10 MB limit
-                .limit(1024*1024*10)
-                .error_handler(|err, _req| {
-                    error::InternalError::from_response(
-                    "",
-                    HttpResponse::BadRequest()
-                        .content_type("application/json")
-                        .body(format!(r#"{{"json error":"{:?}"}}"#, err)),
-                    ).into()
-            }))
+            .app_data(
+                web::JsonConfig::default()
+                    // 10 MB limit
+                    .limit(1024 * 1024 * 10)
+                    .error_handler(|err, _req| {
+                        error::InternalError::from_response(
+                            "",
+                            HttpResponse::BadRequest()
+                                .content_type("application/json")
+                                .body(format!(r#"{{"json error":"{:?}"}}"#, err)),
+                        )
+                        .into()
+                    }),
+            )
             // .app_data(json_error_handler)
             .service(home)
             .service(upsert_collection)
@@ -175,7 +184,7 @@ async fn main() -> std::io::Result<()> {
             .service(remove_image)
             .service(search_image)
     })
-        .bind(full_address)?
-        .run()
-        .await
+    .bind(full_address)?
+    .run()
+    .await
 }
