@@ -24,6 +24,7 @@ from tqdm import tqdm
 
 # Creating a collection to keep the images 
 # -------------
+#
 # In this case we are using MOBILE_NET_V2 as the feature extractor. 
 
 api = RecoAIVisualSearch(bearer_token="secrettoken", address="http://localhost:8890")
