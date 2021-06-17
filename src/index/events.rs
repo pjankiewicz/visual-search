@@ -1,8 +1,6 @@
 use crate::state::app::{CollectionName, GenericModelConfig};
-use image::ImageFormat;
 use schemars::JsonSchema;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use serde_with::serde_as;
+use serde::{Deserialize, Serialize};
 use url::Url;
 
 #[derive(Clone, Serialize, Deserialize)]

@@ -1,16 +1,14 @@
-use crate::image_transform::models::{
-    LoadedModel, ModelArchitecture, ModelConfig, TractSimplePlan,
-};
+use crate::image_transform::models::{LoadedModel, ModelArchitecture, ModelConfig};
 use crate::image_transform::utils::{image_from_bytes, read_bytes_url};
 use crate::index::db::VectorIndex;
 use crate::index::events::{
     AddImage, ImageBytes, ImageSource, RemoveCollection, RemoveImage, SearchImage, UpsertCollection,
 };
 use crate::state::work_queue::WorkQueue;
-use image::{ImageBuffer, Rgb, RgbImage};
+use image::{ImageBuffer, Rgb};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, VecDeque};
+use std::collections::HashMap;
 use std::error::Error;
 use std::sync::{Arc, RwLock};
 use std::thread;
@@ -143,14 +141,6 @@ impl EmbeddingApp {
                 results: vec![],
             })
         }
-    }
-
-    pub fn rebuild_existing_collection(
-        &self,
-        name: CollectionName,
-        generic_model_config: GenericModelConfig,
-    ) {
-        //
     }
 
     pub fn start_workers(&self) -> Vec<JoinHandle<()>> {

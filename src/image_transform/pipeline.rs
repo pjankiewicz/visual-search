@@ -1,5 +1,4 @@
 use crate::image_transform::pipeline::tract_ndarray::Ix4;
-use crate::image_transform::models::LoadedModel;
 use enum_dispatch::enum_dispatch;
 use image::imageops::{crop, resize, FilterType};
 use image::RgbImage;
@@ -305,9 +304,8 @@ mod tests {
 
     use super::*;
     use crate::image_transform::functions::read_rgb_image;
+    use crate::image_transform::models::{LoadedModel, ModelArchitecture};
     use tract_onnx::prelude::*;
-    use crate::state::app::EmbeddingApp;
-    use crate::image_transform::models::ModelArchitecture;
 
     #[test]
     fn test_resize() {
@@ -359,7 +357,11 @@ mod tests {
         let mut loaded_model = LoadedModel::new_from_architecture(ModelArchitecture::MobileNetV2);
         loaded_model.config.layer_name = None;
         let image = read_rgb_image("images/cat.jpeg");
-        let image_tensor = loaded_model.config.image_transformation.transform_image(&image).unwrap();
+        let image_tensor = loaded_model
+            .config
+            .image_transformation
+            .transform_image(&image)
+            .unwrap();
         let result = loaded_model.model.run(tvec!(image_tensor)).unwrap();
 
         // find and display the max value with its index
