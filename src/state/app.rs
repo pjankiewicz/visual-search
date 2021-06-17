@@ -50,7 +50,7 @@ pub struct Collection {
 }
 
 impl Collection {
-    pub fn new(name: &String, model_config: &GenericModelConfig) -> Self {
+    pub fn new(name: &str, model_config: &GenericModelConfig) -> Self {
         let model = match model_config {
             GenericModelConfig::ModelConfig(config) => {
                 LoadedModel::new_from_config((*config).clone())
@@ -61,7 +61,7 @@ impl Collection {
         };
 
         Collection {
-            name: name.clone(),
+            name: name.to_string(),
             model_config: model_config.clone(),
             model: model,
             index: VectorIndex::new(),
@@ -116,7 +116,7 @@ impl EmbeddingApp {
     }
 
     pub fn search_image(&self, search_image: SearchImage) -> Result<ImageResult, Box<dyn Error>> {
-        let mut collections = self.collections.write().map_err(|_| "RwLock Error")?;
+        let collections = self.collections.write().map_err(|_| "RwLock Error")?;
         if let Some(collection) = collections.get(&search_image.collection_name) {
             let image = EmbeddingApp::image_source_to_rgb_image(&search_image.source)?;
             println!("Extracting features");
@@ -128,7 +128,7 @@ impl EmbeddingApp {
                 .iter()
                 .map(|result| SingleImageResult {
                     id: result.id.clone(),
-                    similarity: result.distance.clone(),
+                    similarity: result.distance,
                 })
                 .collect();
             Ok(ImageResult {
@@ -158,7 +158,6 @@ impl EmbeddingApp {
                             EmbeddingApp::add_image_to_collection(collections.clone(), &add_image);
                             ()
                         }
-                        _ => {}
                     }
                 }
                 std::thread::yield_now();
@@ -225,7 +224,7 @@ mod tests {
     #[test]
     fn test_app() {
         let app = EmbeddingApp::new(4);
-        let handles = app.start_workers();
+        app.start_workers();
 
         app.upsert_collection(&UpsertCollection {
             name: "images".to_string(),

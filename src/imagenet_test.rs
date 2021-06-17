@@ -54,7 +54,7 @@ fn main() -> Result<(), String> {
             .last()
             .unwrap()
             .split('.')
-            .nth(0)
+            .next()
             .unwrap();
         let true_class = i32::from_str(class_id_str).unwrap();
 

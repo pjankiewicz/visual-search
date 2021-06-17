@@ -5,7 +5,7 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 
-pub fn remove_non_alphanum(s: &String) -> String {
+pub fn remove_non_alphanum(s: &str) -> String {
     let s_new: String = s
         .chars()
         .map(|x| match x {
@@ -19,7 +19,7 @@ pub fn remove_non_alphanum(s: &String) -> String {
     s_new.replace(" ", "_")
 }
 
-pub fn model_filename(name: &String) -> String {
+pub fn model_filename(name: &str) -> String {
     let clean_name = remove_non_alphanum(name);
     format!("models/{}.onnx", clean_name)
 }
@@ -63,5 +63,5 @@ pub fn read_bytes_url(url: &str) -> reqwest::Result<Bytes> {
 pub fn image_from_bytes(bytes: &Bytes) -> Result<RgbImage, Box<dyn Error>> {
     let dynimg = image::load_from_memory(bytes).unwrap();
     let img = dynimg.to_rgb();
-    Ok(img.clone())
+    Ok(img)
 }

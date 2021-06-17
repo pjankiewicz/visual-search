@@ -6,22 +6,15 @@ use crate::image_transform::architectures::load_model_config;
 use crate::image_transform::functions::read_rgb_image;
 use crate::image_transform::models::{LoadedModel, ModelArchitecture};
 use crate::index::events::{ImageSource, RemoveCollection, UpsertCollection};
-use crate::state::app::GenericModelConfig;
 use clap::App as ClapApp;
-use glob::glob;
-use reqwest::Url;
 use serde::{Deserialize, Serialize};
-use std::str::FromStr;
-use std::time::Instant;
 use tract_onnx::prelude::*;
 
 use crate::index::events::{AddImage, RemoveImage, SearchImage};
 use crate::state::app::EmbeddingApp;
 use actix_web::dev::ServiceRequest;
 use actix_web::web::Data;
-use actix_web::{
-    error, get, post, web, App, Error, HttpRequest, HttpResponse, HttpServer, Responder, Result,
-};
+use actix_web::{error, get, post, web, App, Error, HttpRequest, HttpResponse, HttpServer, Result};
 use std::fs::read_to_string;
 
 use actix_web_httpauth::extractors::bearer::{BearerAuth, Config};
@@ -47,13 +40,12 @@ async fn home(state: web::Data<EmbeddingApp>) -> String {
         "RecoAI Visual Search running with {} workers",
         state.n_workers
     )
-    .into()
 }
 
 #[post("/add_image")]
 async fn add_image(state: web::Data<EmbeddingApp>, add_image: web::Json<AddImage>) -> String {
     println!("Add image");
-    state.add_image(add_image.into_inner());
+    state.add_image(add_image.into_inner()).unwrap();
     "ok".into()
 }
 
@@ -62,7 +54,7 @@ async fn remove_image(
     state: web::Data<EmbeddingApp>,
     remove_image: web::Json<RemoveImage>,
 ) -> String {
-    state.remove_image(remove_image.into_inner());
+    state.remove_image(remove_image.into_inner()).unwrap();
     "ok".into()
 }
 
@@ -72,8 +64,7 @@ async fn search_image(
     search_image: web::Json<SearchImage>,
 ) -> String {
     let search_results = state.search_image(search_image.into_inner()).unwrap();
-    let json_results = serde_json::to_string(&search_results).unwrap();
-    json_results.into()
+    serde_json::to_string(&search_results).unwrap()
 }
 
 #[post("/upsert_collection")]
@@ -97,13 +88,10 @@ async fn remove_collection(
 async fn validator(req: ServiceRequest, credentials: BearerAuth) -> Result<ServiceRequest, Error> {
     let config = req
         .app_data::<Config>()
-        .map(|data| data.clone())
+        .cloned()
         .unwrap_or_else(Default::default);
 
-    let app_config = req
-        .app_data::<Data<AppConfig>>()
-        .map(|data| data.clone())
-        .unwrap();
+    let app_config = req.app_data::<Data<AppConfig>>().cloned().unwrap();
 
     if credentials.token() == app_config.token {
         Ok(req)

@@ -41,11 +41,11 @@ impl ImageTransformResult {
                 vec![width as usize, height as usize]
             }
             ImageTransformResult::Array4(array) => {
-                let shape: Vec<usize> = array.shape().iter().map(|v| v.clone() as usize).collect();
+                let shape: Vec<usize> = array.shape().iter().map(|v| *v as usize).collect();
                 shape
             }
             ImageTransformResult::Tensor(tensor) => {
-                let shape: Vec<usize> = tensor.shape().iter().map(|v| v.clone() as usize).collect();
+                let shape: Vec<usize> = tensor.shape().iter().map(|v| *v as usize).collect();
                 shape
             }
         }
@@ -173,7 +173,7 @@ impl GenericTransform for CenterCrop {
                 let (height, width) = image.dimensions();
                 let left = (width - self.crop_size.width as u32) / 2;
                 let top = (height - self.crop_size.height as u32) / 2;
-                let mut image_cropped = image.clone();
+                let mut image_cropped = image;
                 let image_cropped_new = crop(
                     &mut image_cropped,
                     top as u32,
@@ -250,7 +250,7 @@ impl GenericTransform for ToTensor {
             ImageTransformResult::RgbImage(image) => {
                 let shape = image.dimensions();
                 let tensor: Tensor = tract_ndarray::Array4::from_shape_fn(
-                    (1 as usize, 3 as usize, shape.0 as usize, shape.1 as usize),
+                    (1_usize, 3_usize, shape.0 as usize, shape.1 as usize),
                     |(_, c, y, x)| image[(x as _, y as _)][c] as f32,
                 )
                 .into();
@@ -274,7 +274,7 @@ impl GenericTransform for ToArray {
             ImageTransformResult::RgbImage(image) => {
                 let shape = image.dimensions();
                 let arr = tract_ndarray::Array4::from_shape_fn(
-                    (1 as usize, 3 as usize, shape.0 as usize, shape.1 as usize),
+                    (1_usize, 3_usize, shape.0 as usize, shape.1 as usize),
                     |(_, c, y, x)| image[(x as _, y as _)][c] as f32,
                 );
                 Ok(ImageTransformResult::Array4(arr))
