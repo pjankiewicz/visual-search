@@ -33,7 +33,7 @@ How it works
 -----------
 
 `visual-search` wraps ONNX format and creates a structure that includes:
-- Url of the model (in this case ONNX model from the Microsoft repository)
+- Url of the model (in this case ONNX model from the [Microsoft repository](https://github.com/onnx/models))
 - Image transformation pipeline that is necessary to process the image
 - Layer name to extract features from (it is almost always last but one layer)
 
@@ -78,7 +78,20 @@ It takes 100 seconds to index 1000 images using MobileNetV2 backbone model using
 
 Searching for a single image takes 150 milliseconds.
 
-To do:
+Contact
+-----------
+
+If you are interested in support please write us an e-mail at pawel(at)logicai.io.
+
+License
+-----------
+
+We chose AGPL v3, if you want to use this crate for commercial purposes you must comply
+with the license.
+
+To do
+-----------
+
 - [ ] persistance (right now the server is fully in-memory)
 - [ ] logging
 - [ ] clean all warnings
