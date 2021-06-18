@@ -2,13 +2,17 @@
 name = "visual-search"
 authors = ["Paweł Jankiewicz <pawel@logicai.io>", "Michal Zagalski <michal@logicai.io>"]
 description = "Visual search engine for images using Deep Learning models to extract features"
-license = "AGPLv3"
+license = "AGPL-3.0-or-later"
 edition = "2018"
 version = "0.1.0"
 keywords = ["images", "deep-learning", "search", "vision", "onnx"]
 categories = ["graphics", "computer-vision", "web-programming"]
 readme = "README.md"
 homepage = "https://github.com/recoai/visual-search"
+exclude = [
+    "images/",
+    "models/*.onnx"
+]
 
 [dependencies]
 clap = "2.33.3"
@@ -42,10 +46,10 @@ path = "src/lib.rs"
 path = "src/webapp.rs"
 name = "visual-search"
 
-[[bin]]
-path = "src/imagenet_test.rs"
-name = "imagenet_test"
-
-[[bin]]
-path = "src/generate_schema.rs"
-name = "generate_schema"
+#[[bin]]
+#path = "src/imagenet_test.rs"
+#name = "imagenet_test"
+#
+#[[bin]]
+#path = "src/generate_schema.rs"
+#name = "generate_schema"
