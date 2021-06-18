@@ -1,8 +1,14 @@
 [package]
-authors = ["Paweł Jankiewicz <pawel@logicai.io>", "Michal Zagalski <michal@logicai.io>"]
-edition = "2018"
 name = "visual-search"
+authors = ["Paweł Jankiewicz <pawel@logicai.io>", "Michal Zagalski <michal@logicai.io>"]
+description = "Visual search engine for images using Deep Learning models to extract features"
+license = "AGPLv3"
+edition = "2018"
 version = "0.1.0"
+keywords = ["images", "deep-learning", "search", "vision", "onnx"]
+categories = ["graphics", "computer-vision", "web-programming"]
+readme = "README.md"
+homepage = "https://github.com/recoai/visual-search"
 
 [dependencies]
 clap = "2.33.3"
