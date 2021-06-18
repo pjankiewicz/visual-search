@@ -3,8 +3,8 @@
 Rust web application for visual search. It is a component of [RecoAI](https://recoai.net) which is a fully featured engine
 for e-commerce recommendation systems.
 
-Visual Search in Rust is a single responsibility server/library to perform similar images queries. It works by 
-extracting features using selected deep learning model and indexing them using an approximate nearest neighbors
+Visual Search in Rust is a single responsibility server/library performing similar images queries. It works by 
+extracting features using a selected deep learning model and indexing them using an approximate nearest neighbors
 algorithm. 
 
 Examples
