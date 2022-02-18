@@ -10,7 +10,7 @@ pub fn load_model_config(model: ModelArchitecture) -> ModelConfig {
         // Top-1 accuracy 1000 imagenet: 61.9% (39ms per image)
         ModelArchitecture::SqueezeNet => ModelConfig {
             model_name: "SqueezeNet".into(),
-            model_url: "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.1-7.onnx".into(),
+            model_url: "https://github.com/onnx/models/blob/main/vision/classification/squeezenet/model/squeezenet1.1-7.onnx?raw=true".into(),
             image_transformation: TransformationPipeline {
                 steps: vec![
                     ResizeRGBImageAspectRatio { image_size: ImageSize { width: 224, height: 224 }, scale: 87.5, filter: FilterType::Nearest }.into(),
@@ -27,7 +27,7 @@ pub fn load_model_config(model: ModelArchitecture) -> ModelConfig {
         // Top-1 accuracy 1000 imagenet: 79.8% (75ms per image)
         ModelArchitecture::MobileNetV2 => ModelConfig {
             model_name: "MobileNetV2".into(),
-            model_url: "https://github.com/onnx/models/raw/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx".into(),
+            model_url: "https://github.com/onnx/models/blob/main/vision/classification/mobilenet/model/mobilenetv2-7.onnx?raw=true".into(),
             image_transformation: TransformationPipeline {
                 steps: vec![
                     ResizeRGBImage { image_size: ImageSize { width: 224, height: 224 }, filter: FilterType::Nearest }.into(),
@@ -43,7 +43,7 @@ pub fn load_model_config(model: ModelArchitecture) -> ModelConfig {
         // Top-1 accuracy 1000 imagenet: 90.9% (477ms per image)
         ModelArchitecture::ResNet152 => ModelConfig {
             model_name: "ResNet152".to_string(),
-            model_url: "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet152-v2-7.onnx".to_string(),
+            model_url: "https://github.com/onnx/models/blob/main/vision/classification/resnet/model/resnet152-v2-7.onnx?raw=true".to_string(),
             image_transformation: TransformationPipeline {
                 steps: vec![
                     ResizeRGBImageAspectRatio { image_size: ImageSize { width: 224, height: 224 }, scale: 87.5, filter: FilterType::Nearest }.into(),
@@ -60,7 +60,7 @@ pub fn load_model_config(model: ModelArchitecture) -> ModelConfig {
         // Top-1 accuracy 1000 imagenet: 89.6% (230ms per image)
         ModelArchitecture::EfficientNetLite4 => ModelConfig {
             model_name: "EfficientNet-Lite4".to_string(),
-            model_url: "https://github.com/onnx/models/raw/master/vision/classification/efficientnet-lite4/model/efficientnet-lite4-11.onnx".to_string(),
+            model_url: "https://github.com/onnx/models/blob/main/vision/classification/efficientnet-lite4/model/efficientnet-lite4-11.onnx?raw=true".to_string(),
             image_transformation: TransformationPipeline {
                 steps: vec![
                     ResizeRGBImageAspectRatio { image_size: ImageSize { width: 224, height: 224 }, scale: 87.5, filter: FilterType::Nearest }.into(),
