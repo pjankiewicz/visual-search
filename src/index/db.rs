@@ -4,23 +4,22 @@ use std::sync::{Arc, RwLock};
 
 use hnsw::{Hnsw, Searcher};
 use rand_pcg::Pcg64;
-use space::{MetricPoint, Neighbor};
+use space::{Metric, Neighbor};
 
 const MAX_REMOVED_BEFORE_REBUILD: usize = 100;
 
 #[derive(Clone)]
-pub struct Euclidean(Vec<f32>);
+pub struct Euclidean;
 
-impl MetricPoint for Euclidean {
-    fn distance(&self, rhs: &Self) -> u32 {
-        space::f32_metric(
-            self.0
-                .iter()
-                .zip(rhs.0.iter())
-                .map(|(&a, &b)| (a - b).powi(2))
-                .sum::<f32>()
-                .sqrt(),
-        )
+impl Metric<Vec<f64>> for Euclidean {
+    type Unit = u64;
+    fn distance(&self, a: &Vec<f64>, b: &Vec<f64>) -> u64 {
+        a.iter()
+            .zip(b.iter())
+            .map(|(&a1, &b1)| (a1 - b1).powi(2))
+            .sum::<f64>()
+            .sqrt()
+            .to_bits() as u64
     }
 }
 
@@ -33,9 +32,9 @@ pub struct AnnNeighbor {
 
 #[derive(Clone)]
 pub struct VectorIndex {
-    pub searcher: Arc<RwLock<Searcher>>,
-    pub hnsw: Arc<RwLock<Hnsw<Euclidean, Pcg64, 12, 24>>>,
-    pub vectors: Arc<RwLock<Vec<(String, Vec<f32>)>>>,
+    pub searcher: Arc<RwLock<Searcher<u64>>>,
+    pub hnsw: Arc<RwLock<Hnsw<Euclidean, Vec<f64>, Pcg64, 12, 24>>>,
+    pub vectors: Arc<RwLock<Vec<(String, Vec<f64>)>>>,
     pub removed: Arc<RwLock<HashSet<String>>>,
 }
 
@@ -43,27 +42,30 @@ impl VectorIndex {
     pub fn new() -> Self {
         VectorIndex {
             searcher: Arc::new(RwLock::new(Searcher::default())),
-            hnsw: Arc::new(RwLock::new(Hnsw::new())),
+            hnsw: Arc::new(RwLock::new(Hnsw::new(Euclidean))),
             vectors: Arc::new(RwLock::new(Vec::new())),
             removed: Arc::new(Default::default()),
         }
     }
 
-    pub fn insert(&self, v: Vec<f32>, id: String) {
+    pub fn insert(&self, v: Vec<f64>, id: String) {
         let mut hnsw = self.hnsw.write().unwrap();
         let mut searcher = self.searcher.write().unwrap();
         let mut vectors = self.vectors.write().unwrap();
         vectors.push((id, v.clone()));
-        hnsw.insert(Euclidean(v), &mut searcher);
+        hnsw.insert(v, &mut searcher);
     }
 
-    pub fn search(&self, v: &[f32]) -> Vec<AnnNeighbor> {
-        let mut neighbors = [Neighbor::invalid(); 8];
+    pub fn search(&self, v: &[f64]) -> Vec<AnnNeighbor> {
+        let mut neighbors = [Neighbor {
+            index: !0,
+            distance: !0,
+        }; 8];
         let mut searcher = self.searcher.write().unwrap();
         let hnsw = self.hnsw.write().unwrap();
         let removed = self.removed.read().unwrap();
         let vectors = self.vectors.read().unwrap();
-        hnsw.nearest(&Euclidean(v.to_vec()), 8, &mut searcher, &mut neighbors);
+        hnsw.nearest(&v.to_vec(), 8, &mut searcher, &mut neighbors);
         println!("Neighbors {:?}", neighbors);
         neighbors
             .iter()
@@ -76,7 +78,7 @@ impl VectorIndex {
             .map(|n| AnnNeighbor {
                 id: vectors[n.index].0.clone(),
                 index: n.index,
-                distance: n.distance,
+                distance: n.distance as u32,
             })
             .collect()
     }
@@ -128,7 +130,7 @@ mod tests {
     #[test]
     fn test_vector_index() {
         let index = VectorIndex::new();
-        let features: [&[f32]; 9] = [
+        let features: [&[f64]; 9] = [
             &[0.0, 0.0, 0.0, 0.0],
             &[0.0, 0.0, 0.0, 1.0],
             &[0.0, 0.0, 1.0, 1.0],

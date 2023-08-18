@@ -37,7 +37,7 @@ pub struct AppConfig {
 #[get("/")]
 async fn home(state: web::Data<EmbeddingApp>) -> String {
     format!(
-        "RecoAI Visual Search running with {} workers",
+        "Visual Search running with {} workers",
         state.n_workers
     )
 }
@@ -133,7 +133,7 @@ async fn main() -> std::io::Result<()> {
     )
     .expect("Problems reading the file with configuration");
 
-    let app_config: AppConfig = toml::from_str(&app_config_str)?;
+    let app_config: AppConfig = toml::from_str(&app_config_str).expect("Cannot read configuration");
 
     let full_address = format!(
         "{:}:{:}",

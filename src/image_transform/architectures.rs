@@ -27,7 +27,7 @@ pub fn load_model_config(model: ModelArchitecture) -> ModelConfig {
         // Top-1 accuracy 1000 imagenet: 79.8% (75ms per image)
         ModelArchitecture::MobileNetV2 => ModelConfig {
             model_name: "MobileNetV2".into(),
-            model_url: "https://github.com/onnx/models/blob/main/vision/classification/mobilenet/model/mobilenetv2-7.onnx?raw=true".into(),
+            model_url: "https://github.com/onnx/models/raw/main/vision/classification/mobilenet/model/mobilenetv2-7.onnx?raw=true".into(),
             image_transformation: TransformationPipeline {
                 steps: vec![
                     ResizeRGBImage { image_size: ImageSize { width: 224, height: 224 }, filter: FilterType::Nearest }.into(),
@@ -74,6 +74,24 @@ pub fn load_model_config(model: ModelArchitecture) -> ModelConfig {
             image_size: ImageSize { width: 224, height: 224 },
             layer_name: Some("efficientnet-lite4/model/head/Squeeze".into()),
             channels: Channels::WHC
-        }
+        },
+        // Doesn't work
+        ModelArchitecture::GoogleNet => ModelConfig {
+            model_name: "GoogleNet".to_string(),
+            model_url: "https://github.com/onnx/models/raw/main/vision/classification/inception_and_googlenet/googlenet/model/googlenet-12.onnx".to_string(),
+            image_transformation: TransformationPipeline {
+                steps: vec![
+                    ResizeRGBImage { image_size: ImageSize { width: 224, height: 224 }, filter: FilterType::Nearest }.into(),
+                    ToArray {}.into(),
+                    Normalization { sub: [123.68, 116.779, 103.939], div: [1.0, 1.0, 1.0], zeroone: false }.into(),
+                    ToTensor {}.into(),
+                    Transpose { axes: [0, 2, 3, 1] }.into(),  // If necessary, as per your framework's requirement.
+                ]
+            },
+            image_size: ImageSize { width: 224, height: 224 },
+            layer_name: Some("efficientnet-lite4/model/head/Squeeze".into()),
+            channels: Channels::WHC
+        },
+
     }
 }

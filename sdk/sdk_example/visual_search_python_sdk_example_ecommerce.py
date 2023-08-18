@@ -13,8 +13,8 @@
 # ---
 
 import sys
-sys.path.append("../python/recoai_visual_search/")
-from visual_search import RecoAIVisualSearch
+sys.path.append("../python/visual_search/")
+from visual_search import VisualSearch
 from models import *
 import json
 from glob import glob
@@ -27,7 +27,7 @@ from tqdm import tqdm
 #
 # In this case we are using MOBILE_NET_V2 as the feature extractor. 
 
-api = RecoAIVisualSearch(bearer_token="secrettoken", address="http://localhost:8890")
+api = VisualSearch(bearer_token="secrettoken", address="http://localhost:8890")
 upsert_collection = UpsertCollection(
     config=GenericModelConfig(
         model_architecture=ModelArchitecture.MOBILE_NET_V2

@@ -62,6 +62,6 @@ pub fn read_bytes_url(url: &str) -> reqwest::Result<Bytes> {
 
 pub fn image_from_bytes(bytes: &Bytes) -> Result<RgbImage, Box<dyn Error>> {
     let dynimg = image::load_from_memory(bytes).unwrap();
-    let img = dynimg.to_rgb();
+    let img = dynimg.to_rgb8();
     Ok(img)
 }

@@ -354,15 +354,17 @@ mod tests {
 
     #[test]
     fn test_classification() {
-        let mut loaded_model = LoadedModel::new_from_architecture(ModelArchitecture::MobileNetV2);
+        let mut loaded_model = LoadedModel::new_from_architecture(ModelArchitecture::SqueezeNet);
         loaded_model.config.layer_name = None;
-        let image = read_rgb_image("images/cat.jpeg");
+        let image = read_rgb_image("images/cat.png");
         let image_tensor = loaded_model
             .config
             .image_transformation
             .transform_image(&image)
             .unwrap();
-        let result = loaded_model.model.run(tvec!(image_tensor)).unwrap();
+        let t_image_tensor: TValue = image_tensor.into();
+        let tvec = tvec!(t_image_tensor);
+        let result = loaded_model.model.run(tvec).unwrap();
 
         // find and display the max value with its index
         let best = result[0]

@@ -15,8 +15,8 @@
 
 
 import sys
-sys.path.append("../python/recoai_visual_search/")
-from visual_search import RecoAIVisualSearch
+sys.path.append("../python/visual_search/")
+from visual_search import VisualSearch
 from models import *
 import json
 from glob import glob
@@ -24,7 +24,7 @@ import ipyplot
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 
-api = RecoAIVisualSearch(bearer_token="secrettoken", address="http://localhost:8890")
+api = VisualSearch(bearer_token="secrettoken", address="http://localhost:8890")
 
 
 # Creating a collection to keep the images 

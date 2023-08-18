@@ -75,7 +75,7 @@ impl LoadedModel {
         model.into_optimized().unwrap().into_runnable().unwrap()
     }
 
-    pub fn extract_features(&self, image: RgbImage) -> Result<Vec<f32>, String> {
+    pub fn extract_features(&self, image: RgbImage) -> Result<Vec<f64>, String> {
         println!("Transforming the image");
         let image_tensor = self
             .config
@@ -85,13 +85,14 @@ impl LoadedModel {
         println!("Running the model");
         let result = self
             .model
-            .run(tvec!(image_tensor))
+            .run(tvec!(image_tensor.into()))
             .expect("Cannot run model");
-        let features: Vec<f32> = result[0]
+        let features: Vec<f64> = result[0]
             .to_array_view::<f32>()
             .expect("Cannot extract feature vector")
             .iter()
             .cloned()
+            .map(|v| v as f64)
             .collect();
         Ok(features)
     }
@@ -103,6 +104,7 @@ pub enum ModelArchitecture {
     MobileNetV2,
     ResNet152,
     EfficientNetLite4,
+    GoogleNet
 }
 
 #[cfg(test)]

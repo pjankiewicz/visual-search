@@ -19,7 +19,7 @@ def remove_none(obj):
     else:
         return obj
 
-class RecoAIVisualSearch():
+class VisualSearch():
 
     def __init__(self, bearer_token, address):
         self.bearer_token = bearer_token

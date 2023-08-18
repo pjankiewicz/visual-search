@@ -34,7 +34,9 @@ fn main() -> Result<(), String> {
             .transform_image(&image)
             .expect("Cannot transform image");
 
-        let result = model.model.run(tvec!(image_tensor)).unwrap();
+        let t_image_tensor: TValue = image_tensor.into();
+        let tvec = tvec!(t_image_tensor);
+        let result = model.model.run(tvec).unwrap();
 
         // find and display the max value with its index
         let best = result[0]
@@ -73,6 +75,8 @@ fn main() -> Result<(), String> {
             start.elapsed().as_millis() as f32 / ((n_good + n_bad) as f32)
         );
     }
+
+    println!("good {} bad {} accuracy {}", n_good, n_bad, (n_good as f64) / (n_good as f64 + n_bad as f64));
 
     Ok(())
 }
