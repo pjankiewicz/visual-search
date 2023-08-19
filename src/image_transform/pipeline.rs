@@ -376,6 +376,6 @@ mod tests {
             .max_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
 
         // this is classified as a lynx which is close enough I guess
-        assert!(vec![283,287].contains(&best.unwrap().1));
+        assert!(vec![283, 287].contains(&best.unwrap().1));
     }
 }

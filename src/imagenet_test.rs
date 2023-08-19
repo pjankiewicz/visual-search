@@ -76,7 +76,12 @@ fn main() -> Result<(), String> {
         );
     }
 
-    println!("good {} bad {} accuracy {}", n_good, n_bad, (n_good as f64) / (n_good as f64 + n_bad as f64));
+    println!(
+        "good {} bad {} accuracy {}",
+        n_good,
+        n_bad,
+        (n_good as f64) / (n_good as f64 + n_bad as f64)
+    );
 
     Ok(())
 }

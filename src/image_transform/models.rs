@@ -5,8 +5,8 @@ use image::RgbImage;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
-use tract_onnx::prelude::*;
 use tract_nnef::prelude::*;
+use tract_onnx::prelude::*;
 
 pub type TractSimplePlan =
     SimplePlan<TypedFact, Box<dyn TypedOp>, Graph<TypedFact, Box<dyn TypedOp>>>;
@@ -27,7 +27,7 @@ impl ModelType {
     pub fn to_extension(&self) -> String {
         match self {
             ModelType::ONNX => "onnx".to_string(),
-            ModelType::NNEF => "nnef.tgz".to_string()
+            ModelType::NNEF => "nnef.tgz".to_string(),
         }
     }
 }
@@ -139,7 +139,7 @@ pub enum ModelArchitecture {
     MobileNetV2,
     ResNet152,
     EfficientNetLite4,
-    GoogleNet
+    GoogleNet,
 }
 
 #[cfg(test)]

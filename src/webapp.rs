@@ -36,10 +36,7 @@ pub struct AppConfig {
 
 #[get("/")]
 async fn home(state: web::Data<EmbeddingApp>) -> String {
-    format!(
-        "Visual Search running with {} workers",
-        state.n_workers
-    )
+    format!("Visual Search running with {} workers", state.n_workers)
 }
 
 #[post("/add_image")]
