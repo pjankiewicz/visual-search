@@ -6,6 +6,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 use tract_onnx::prelude::*;
+use tract_nnef::prelude::*;
 
 pub type TractSimplePlan =
     SimplePlan<TypedFact, Box<dyn TypedOp>, Graph<TypedFact, Box<dyn TypedOp>>>;
@@ -17,9 +18,25 @@ pub enum Channels {
 }
 
 #[derive(Clone, Serialize, Deserialize, JsonSchema)]
+pub enum ModelType {
+    ONNX,
+    NNEF,
+}
+
+impl ModelType {
+    pub fn to_extension(&self) -> String {
+        match self {
+            ModelType::ONNX => "onnx".to_string(),
+            ModelType::NNEF => "nnef.tgz".to_string()
+        }
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 pub struct ModelConfig {
     pub model_name: String,
     pub model_url: String,
+    pub model_type: ModelType,
     pub image_transformation: TransformationPipeline,
     pub image_size: ImageSize,
     pub layer_name: Option<String>,
@@ -47,7 +64,8 @@ impl LoadedModel {
     pub fn load_model(config: &ModelConfig) -> TractSimplePlan {
         let name = config.model_name.clone();
         let url = config.model_url.clone();
-        let filename = model_filename(&name);
+        let extension = config.model_type.to_extension();
+        let filename = model_filename(&name, &extension);
         if !Path::new(&filename).exists() {
             println!("Downloading model file");
             save_file_get(&url, &filename);
@@ -59,6 +77,23 @@ impl LoadedModel {
             Channels::CWH => tvec!(1, 3, config.image_size.width, config.image_size.height),
             Channels::WHC => tvec!(1, config.image_size.width, config.image_size.height, 3),
         };
+
+        // let mut model = match config.model_type {
+        //     ModelType::NNEF => {
+        //         tract_nnef::nnef()
+        //             .model_for_path(&filename)
+        //             .expect("Cannot read model")
+        //             .with_input_fact(0, TypedFact::dt_shape(f32::datum_type(), input_shape))
+        //             .unwrap()
+        //     },
+        //     ModelType::ONNX => {
+        //         let a = tract_onnx::onnx()
+        //             .model_for_path(&filename)
+        //             .expect("Cannot read model")
+        //             .with_input_fact(0, InferenceFact::dt_shape(f32::datum_type(), input_shape))
+        //             .unwrap()
+        //     }
+        // };
 
         let mut model = tract_onnx::onnx()
             .model_for_path(&filename)

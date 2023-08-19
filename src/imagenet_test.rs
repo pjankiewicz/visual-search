@@ -14,7 +14,7 @@ mod index;
 mod state;
 
 fn main() -> Result<(), String> {
-    let mut config = load_model_config(ModelArchitecture::MobileNetV2);
+    let mut config = load_model_config(ModelArchitecture::EfficientNetLite4);
     // set layer to None to treat this as a normal prediction
     config.layer_name = None;
     let model = LoadedModel::new_from_config(config);

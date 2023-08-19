@@ -1,4 +1,4 @@
-use crate::image_transform::models::{Channels, ModelArchitecture, ModelConfig};
+use crate::image_transform::models::{Channels, ModelArchitecture, ModelConfig, ModelType};
 use crate::image_transform::pipeline::{
     CenterCrop, ImageSize, Normalization, ResizeRGBImage, ResizeRGBImageAspectRatio, ToArray,
     ToTensor, TransformationPipeline, Transpose,
@@ -11,6 +11,7 @@ pub fn load_model_config(model: ModelArchitecture) -> ModelConfig {
         ModelArchitecture::SqueezeNet => ModelConfig {
             model_name: "SqueezeNet".into(),
             model_url: "https://github.com/onnx/models/blob/main/vision/classification/squeezenet/model/squeezenet1.1-7.onnx?raw=true".into(),
+            model_type: ModelType::ONNX,
             image_transformation: TransformationPipeline {
                 steps: vec![
                     ResizeRGBImageAspectRatio { image_size: ImageSize { width: 224, height: 224 }, scale: 87.5, filter: FilterType::Nearest }.into(),
@@ -27,7 +28,8 @@ pub fn load_model_config(model: ModelArchitecture) -> ModelConfig {
         // Top-1 accuracy 1000 imagenet: 79.8% (75ms per image)
         ModelArchitecture::MobileNetV2 => ModelConfig {
             model_name: "MobileNetV2".into(),
-            model_url: "https://github.com/onnx/models/raw/main/vision/classification/mobilenet/model/mobilenetv2-7.onnx?raw=true".into(),
+            model_url: "https://github.com/onnx/models/raw/main/vision/classification/mobilenet/model/mobilenetv2-7.onnx".into(),
+            model_type: ModelType::ONNX,
             image_transformation: TransformationPipeline {
                 steps: vec![
                     ResizeRGBImage { image_size: ImageSize { width: 224, height: 224 }, filter: FilterType::Nearest }.into(),
@@ -37,13 +39,14 @@ pub fn load_model_config(model: ModelArchitecture) -> ModelConfig {
                 ]
             },
             image_size: ImageSize { width: 224, height: 224 },
-            layer_name: Some("Reshape_103".to_string()),
+            layer_name: Some("mobilenetv20_features_pool0_fwd".to_string()),
             channels: Channels::CWH
         },
         // Top-1 accuracy 1000 imagenet: 90.9% (477ms per image)
         ModelArchitecture::ResNet152 => ModelConfig {
             model_name: "ResNet152".to_string(),
             model_url: "https://github.com/onnx/models/blob/main/vision/classification/resnet/model/resnet152-v2-7.onnx?raw=true".to_string(),
+            model_type: ModelType::ONNX,
             image_transformation: TransformationPipeline {
                 steps: vec![
                     ResizeRGBImageAspectRatio { image_size: ImageSize { width: 224, height: 224 }, scale: 87.5, filter: FilterType::Nearest }.into(),
@@ -58,12 +61,14 @@ pub fn load_model_config(model: ModelArchitecture) -> ModelConfig {
             channels: Channels::CWH
         },
         // Top-1 accuracy 1000 imagenet: 89.6% (230ms per image)
+        // linear filter (triangle) = 91.1%
         ModelArchitecture::EfficientNetLite4 => ModelConfig {
             model_name: "EfficientNet-Lite4".to_string(),
             model_url: "https://github.com/onnx/models/blob/main/vision/classification/efficientnet-lite4/model/efficientnet-lite4-11.onnx?raw=true".to_string(),
+            model_type: ModelType::ONNX,
             image_transformation: TransformationPipeline {
                 steps: vec![
-                    ResizeRGBImageAspectRatio { image_size: ImageSize { width: 224, height: 224 }, scale: 87.5, filter: FilterType::Nearest }.into(),
+                    ResizeRGBImageAspectRatio { image_size: ImageSize { width: 224, height: 224 }, scale: 87.5, filter: FilterType::Triangle }.into(),
                     CenterCrop { crop_size: ImageSize {width: 224, height: 224} }.into(),
                     ToArray {}.into(),
                     Normalization { sub: [127.0, 127.0, 127.0], div: [128.0, 128.0, 128.0], zeroone: false }.into(),
@@ -79,6 +84,7 @@ pub fn load_model_config(model: ModelArchitecture) -> ModelConfig {
         ModelArchitecture::GoogleNet => ModelConfig {
             model_name: "GoogleNet".to_string(),
             model_url: "https://github.com/onnx/models/raw/main/vision/classification/inception_and_googlenet/googlenet/model/googlenet-12.onnx".to_string(),
+            model_type: ModelType::ONNX,
             image_transformation: TransformationPipeline {
                 steps: vec![
                     ResizeRGBImage { image_size: ImageSize { width: 224, height: 224 }, filter: FilterType::Nearest }.into(),
@@ -92,6 +98,5 @@ pub fn load_model_config(model: ModelArchitecture) -> ModelConfig {
             layer_name: Some("efficientnet-lite4/model/head/Squeeze".into()),
             channels: Channels::WHC
         },
-
     }
 }

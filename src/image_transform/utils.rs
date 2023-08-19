@@ -19,9 +19,9 @@ pub fn remove_non_alphanum(s: &str) -> String {
     s_new.replace(" ", "_")
 }
 
-pub fn model_filename(name: &str) -> String {
+pub fn model_filename(name: &str, extension: &str) -> String {
     let clean_name = remove_non_alphanum(name);
-    format!("models/{}.onnx", clean_name)
+    format!("models/{}.{}", clean_name, extension)
 }
 
 pub fn save_file_get(url: &str, path: &str) -> Result<(), String> {
